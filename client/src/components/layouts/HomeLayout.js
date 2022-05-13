@@ -16,6 +16,7 @@ import NewUser from '../users/NewUser'
 import UserUpdate from '../users/UserUpdate'
 import AboutUs from '../aboutus/AboutUs'
 import Contact from '../contact/Contact'
+import DeviceLocation from '../devices/DeviceLocation'
 
 const HomeLayout = () => {
     return (
@@ -33,6 +34,7 @@ const HomeLayout = () => {
                     <Route exact path="/device/:id" component={DevicesDetail} />
                     <Route exact path="/reset/:id" component={ResetPassword} />
                     <Route exact path="/profil/:id" component={Profil} />
+                    <Route exact path="/devicelocation/:id" component={DeviceLocation} />
 
                     <Route exact path="/aboutus" component={AboutUs} />
                     <Route exact path="/contact" component={Contact} />

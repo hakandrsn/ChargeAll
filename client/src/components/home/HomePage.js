@@ -10,6 +10,7 @@ import { FiUserCheck } from 'react-icons/fi'
 import { MdPriceCheck, MdPriceChange } from 'react-icons/md'
 import GoogleMapReact from 'google-map-react';
 import screen from "../../screen"
+import GoogleMap from '../shared/GoogleMap';
 
 const HomePage = () => {
   const [width] = screen()
@@ -21,20 +22,19 @@ const HomePage = () => {
   useEffect(() => {
     (async () => {
       setLoading(true)
+      await ax.get(`/devices`).then(res => {
+        setDevices(res.data)
+      }).finally(() => {
+        setLoading(false)
+      })
       await ax.get(`/users`).then(res => {
         const filteredUsers = res.data.filter((user) => user.site === userSite)
         setUsers(filteredUsers)
       }).finally(() => {
         setLoading(false)
       })
-      await ax.get(`/devices`).then(res => {
-        setDevices(res.data)
-      }).finally(() => {
-        setLoading(false)
-      })
     })()
   }, [])
-  console.log(users)
   const deviceCount = devices && devices.length
   const deviceState = devices && devices.filter(d => d.state === "1").length
   const userCount = users && users.length
@@ -103,9 +103,7 @@ const HomePage = () => {
       "Aylık": userFillsDate(0).balanceForGrafMonth,
     }
   ]
-  const Marker = ({ text }) => {
-    <div>nabersin {text}</div>
-  }
+
   return (
     <div className=''>
       <div className='text-center fs-3 mb-3 fst-italic fw-bolder' style={{ color: "#353B48" }}>Özet</div>
@@ -136,21 +134,7 @@ const HomePage = () => {
       <hr className='w-75 mx-auto' />
       <div className='text-center fs-3 mb-3 fst-italic fw-bolder' style={{ color: "#353B48" }}>Cihaz Konumları</div>
       <div className='mx-auto' style={{ height: '100vh', width: '100%', marginTop: 45 }}>
-        <GoogleMapReact
-               bootstrapURLKeys={{ key: "AIzaSyBPeeSwsoJ6yA5A_PFz51wrQd4SVLcJdDU" }}
-               defaultCenter={{ lat: 39.19985299873145, lng:  33.53684485914165 }}
-               defaultZoom={7}
-        >
-          {
-            devices && devices.map((device, i) => {
-              const ll = device.location.split(",")
-              console.log(Number(ll[0]), Number(ll[1]))
-              return (
-                <Marker key={i} lat={parseInt(ll[0])} lng={parseInt(ll[1])} text="hakan" />
-              )
-            })
-          }
-        </GoogleMapReact>
+       <GoogleMap devices={devices} />
       </div>
     </div>
   )
