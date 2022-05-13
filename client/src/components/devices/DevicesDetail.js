@@ -3,6 +3,47 @@ import Modal from "../../modal/Modal"
 import history from '../../history'
 import ax from '../../ax'
 import filterIcons from "../../assets/icons/filter.svg"
+import Pdf from '../../utils/pdf/pdf'
+import PdfButton from '../shared/PdfButton'
+import TotalLabel from '../shared/TotalLabel'
+const headersDevices = [
+  {
+    id: "userid",
+    numeric: false,
+    disablePadding: false,
+    label: "Kullanıcı id",
+    isFiltering: true,
+  },
+  {
+    id: "energy",
+    numeric: false,
+    disablePadding: false,
+    label: "Miktar",
+    isFiltering: true,
+  },
+  {
+    id: "duration",
+    numeric: false,
+    disablePadding: false,
+    label: "Son bakiye",
+    isFiltering: true,
+  },
+  {
+    id: "amount",
+    numeric: false,
+    disablePadding: false,
+    label: "yetkili",
+    isFiltering: true,
+  },
+  {
+    id: "date",
+    numeric: false,
+    disablePadding: false,
+    label: "Tarih",
+    isFiltering: true,
+  },
+
+];
 const DevicesDetail = (props) => {
   const { id } = props.match.params
   const [device, setDevice] = useState([])
@@ -23,7 +64,7 @@ const DevicesDetail = (props) => {
     }).finally(() => setLoading(false))
   }, [error, id])
   const sorting1 = (srt = "userid", data) => {
-    const sortedData = data.sort((a, b) => {
+    const sortedData = data && data.sort((a, b) => {
       if (a[srt] < b[srt]) return 1
       if (a[srt] > b[srt]) return -1
       return 0
@@ -38,10 +79,10 @@ const DevicesDetail = (props) => {
     })
   }
   const deleteDevice = async (device) => {
-    if(window.confirm("Silmek istediğinize emin misiniz ?")){
+    if (window.confirm("Silmek istediğinize emin misiniz ?")) {
       await ax.delete(`/devices/${device._id}`).then(res => {
         history.push("/devices")
-      }).catch(err => {alert(err)})
+      }).catch(err => { alert(err) })
     }
   }
   const renderContent = () => {
@@ -80,11 +121,18 @@ const DevicesDetail = (props) => {
             </div>
             <div className="tab-pane fade" id="operations" role="tabpanel" aria-labelledby="operations-tab">
 
-              <div className="input-group mb-3">
-                <input onChange={(e) => setSearch(e.target.value.toLowerCase())} type="text" className="form-control" placeholder="Operasyonlarda Ara" aria-label="Recipient's username" aria-describedby="button-addon2" />
-                <button className="btn btn-outline-secondary" type="button" id="button-addon2">Ara</button>
+              <div className='d-flex'>
+                <div className="input-group mb-3">
+                  <input onChange={(e) => setSearch(e.target.value.toLowerCase())} type="text" className="form-control" placeholder="Operasyonlarda Ara" aria-label="Recipient's username" aria-describedby="button-addon2" />
+                  <button className="btn btn-outline-secondary" type="button" id="button-addon2">Ara</button>
+                </div>
+                <PdfButton header={headersDevices} data={sorting1(sorted, device.operations)} title="Cihaz İşlemleri" />
               </div>
-
+              <div className='d-flex justify-content-evenly mb-2'>
+                <TotalLabel title="Toplam Enerji" data={device.operations} value="energy" />
+                <TotalLabel title="Toplam Süre" data={device.operations} value="duration" />
+                <TotalLabel title="Toplam Ödeme" data={device.operations} value="amount" />
+              </div>
               <div className='table-responsive '>
                 <table className='table borderless'>
                   <thead className='table-dark'>

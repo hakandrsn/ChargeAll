@@ -4,7 +4,9 @@ import history from '../../history'
 import ax from '../../ax'
 import "./Users.css"
 import filterIcons from "../../assets/icons/filter.svg"
-
+import Pdf from '../../utils/pdf/pdf'
+import PdfButton from '../shared/PdfButton'
+import TotalLabel from '../shared/TotalLabel'
 const UsersDetail = (props) => {
   const { id } = props.match.params
   const [user, setUser] = useState({})
@@ -15,10 +17,87 @@ const UsersDetail = (props) => {
   const replaceDate = (op) => {
     return new Date(op.date).getFullYear() + "-" + new Date(op.date).getMonth() + "-" + new Date(op.date).getDate()
   }
+  const headersCharge = [
+    {
+      id: "deviceid",
+      numeric: false,
+      disablePadding: false,
+      label: "Cihaz İd",
+      isFiltering: true,
+    },
+    {
+      id: "energy",
+      numeric: false,
+      disablePadding: false,
+      label: "Enerji",
+      isFiltering: true,
+    },
+    {
+      id: "amount",
+      numeric: false,
+      disablePadding: false,
+      label: "Miktar",
+      isFiltering: true,
+    },
+    {
+      id: "duration",
+      numeric: false,
+      disablePadding: false,
+      label: "Süre",
+      isFiltering: true,
+    },
+    {
+      id: "date",
+      numeric: false,
+      disablePadding: false,
+      label: "Tarih",
+      isFiltering: true,
+    },
+
+  ];
+  const headersFills = [
+    {
+      id: "userid",
+      numeric: false,
+      disablePadding: false,
+      label: "Kullanıcı id",
+      isFiltering: true,
+    },
+    {
+      id: "amount",
+      numeric: false,
+      disablePadding: false,
+      label: "Miktar",
+      isFiltering: true,
+    },
+    {
+      id: "lastbalance",
+      numeric: false,
+      disablePadding: false,
+      label: "Son bakiye",
+      isFiltering: true,
+    },
+    {
+      id: "admin",
+      numeric: false,
+      disablePadding: false,
+      label: "yetkili",
+      isFiltering: true,
+    },
+    {
+      id: "date",
+      numeric: false,
+      disablePadding: false,
+      label: "Tarih",
+      isFiltering: true,
+    },
+
+  ];
+
   useEffect(() => {
     setLoading(true)
     const getingUser = async () => {
-     await ax.get(`/users/${id}`).then(res => {
+      await ax.get(`/users/${id}`).then(res => {
         setUser(res.data)
       }).catch(err => {
         setError(err)
@@ -28,7 +107,7 @@ const UsersDetail = (props) => {
     getingUser()
   }, [id, error])
   const filteredDevice = (srt = "date", data) => {
-    const sortedData = data.sort((a, b) => {
+    const sortedData =data && data.sort((a, b) => {
       if (a[srt] < b[srt]) return 1
       if (a[srt] > b[srt]) return -1
       return 0
@@ -42,8 +121,9 @@ const UsersDetail = (props) => {
         (dat.admin && dat.admin.toString().toLowerCase().includes(search))
     })
   }
+
   const filteredFills = (srt = "date", data) => {
-    const sortedData = data.sort((a, b) => {
+    const sortedData =data && data.sort((a, b) => {
       if (a[srt] < b[srt]) return 1
       if (a[srt] > b[srt]) return -1
       return 0
@@ -58,13 +138,14 @@ const UsersDetail = (props) => {
     })
   }
   const deleteUser = async (user) => {
-    if(window.confirm("Silmek istediğinize emin misiniz ?")){
+    if (window.confirm("Silmek istediğinize emin misiniz ?")) {
       await ax.delete(`/users/${user._id}`).then(res => {
         history.push("/users")
         console.log(res)
-      }).catch(err => {alert(err)})
+      }).catch(err => { alert(err) })
     }
   }
+
   const renderContent = () => {
     return (
       <div className='w-100'>
@@ -72,7 +153,7 @@ const UsersDetail = (props) => {
         <button
           onClick={() => deleteUser(user)}
           className='position-absolute px-3 rounded'
-          style={{ top: 15, left: 15,color:"white", backgroundColor: "red", border: "none" }}>
+          style={{ top: 15, left: 15, color: "white", backgroundColor: "red", border: "none" }}>
           Sil
         </button>
 
@@ -105,9 +186,17 @@ const UsersDetail = (props) => {
               </ol>
             </div>
             <div className="tab-pane fade" id="operations" role="tabpanel" aria-labelledby="operations-tab">
-              <div className="input-group mb-3">
-                <input onChange={(e) => setSearch(e.target.value.toLowerCase())} type="text" className="form-control" placeholder="Operasyonlarda Ara" aria-label="Recipient's username" aria-describedby="button-addon2" />
-                <button className="btn btn-outline-secondary" type="button" id="button-addon2">Ara</button>
+              <div className='d-flex'>
+                <div className="input-group mb-3">
+                  <input onChange={(e) => setSearch(e.target.value.toLowerCase())} type="text" className="form-control" placeholder="Operasyonlarda Ara" aria-label="Recipient's username" aria-describedby="button-addon2" />
+                  <button className="btn btn-outline-secondary" type="button" id="button-addon2">Ara</button>
+                </div>
+                <PdfButton header={headersCharge} data={filteredDevice(sorted, user.operations)} title="Şarj İşlemleri" />
+              </div>
+              <div className='d-flex justify-content-evenly mb-2'>
+              <TotalLabel title="Toplam Enerji" data={user.operations} value="energy" />
+              <TotalLabel title="Toplam Ödeme" data={user.operations} value="amount" />
+              <TotalLabel title="Toplam Süre" data={user.operations} value="duration" />
               </div>
               <div className='table-responsive'>
                 <table className='table borderless'>
@@ -146,41 +235,48 @@ const UsersDetail = (props) => {
 
 
             <div className="tab-pane fade show" id="fills" role="tabpanel" aria-labelledby="devices-tab">
-            <div className="input-group mb-3">
-                <input onChange={(e) => setSearch(e.target.value.toLowerCase())} type="text" className="form-control" placeholder="Bakiyelerde Ara" aria-label="Recipient's username" aria-describedby="button-addon3" />
-                <button className="btn btn-outline-secondary" type="button" id="button-addon3">Ara</button>
+              <div className='d-flex '>
+                <div className="input-group mb-3">
+                  <input onChange={(e) => setSearch(e.target.value.toLowerCase())} type="text" className="form-control" placeholder="Bakiyelerde Ara" aria-label="Recipient's username" aria-describedby="button-addon3" />
+                  <button className="btn btn-outline-secondary" type="button" id="button-addon3">Ara</button>
+                </div>
+                <PdfButton header={headersFills} data={filteredFills(sorted, user.fills)} title="Bakiye Yüklemeleri" />
               </div>
-            <table className='table borderless'>
-                  <thead className='table-dark'>
-                    <tr>
-                      <th>#</th>
-                      <th><button onClick={() => setSorted("userid")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Kullanıcı id</button><img width={25} alt="user" src={filterIcons} /></th>
-                      <th><button onClick={() => setSorted("amount")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Miktar</button><img width={25} alt="user" src={filterIcons} /></th>
-                      <th><button onClick={() => setSorted("lastbalance")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Son Bakiye</button><img width={25} alt="user" src={filterIcons} /></th>
-                      <th><button onClick={() => setSorted("admin")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Yetki</button><img width={25} alt="user" src={filterIcons} /></th>
-                      <th><button onClick={() => setSorted("date")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Tarih</button><img width={25} alt="user" src={filterIcons} /></th>
+              <div className='d-flex justify-content-evenly mb-2'>
+              <TotalLabel title="Toplam Ödeme" data={user.operations} value="amount" />
+              <TotalLabel title="Toplam Son Bakiye" data={user.operations} value="lastbalance" />
+              </div>
+              <table className='table borderless'>
+                <thead className='table-dark'>
+                  <tr>
+                    <th>#</th>
+                    <th><button onClick={() => setSorted("userid")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Kullanıcı id</button><img width={25} alt="user" src={filterIcons} /></th>
+                    <th><button onClick={() => setSorted("amount")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Miktar</button><img width={25} alt="user" src={filterIcons} /></th>
+                    <th><button onClick={() => setSorted("lastbalance")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Son Bakiye</button><img width={25} alt="user" src={filterIcons} /></th>
+                    <th><button onClick={() => setSorted("admin")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Yetki</button><img width={25} alt="user" src={filterIcons} /></th>
+                    <th><button onClick={() => setSorted("date")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Tarih</button><img width={25} alt="user" src={filterIcons} /></th>
 
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {
-                      user.fills && filteredFills(sorted, user.fills).map((op, i) => {
-                        return (
-                          <tr key={i}>
-                            <td>{i + 1}</td>
-                            <td>{op.userid}</td>
-                            <td>{op.amount}</td>
-                            <td>{op.lastbalance}</td>
-                            <td>{op.admin}</td>
-                            <td>{new Date(op.date).getFullYear() + "-" + new Date(op.date).getMonth() + "-" + new Date(op.date).getDate()
-                            }</td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    user.fills && filteredFills(sorted, user.fills).map((op, i) => {
+                      return (
+                        <tr key={i}>
+                          <td>{i + 1}</td>
+                          <td>{op.userid}</td>
+                          <td>{op.amount}</td>
+                          <td>{op.lastbalance}</td>
+                          <td>{op.admin}</td>
+                          <td>{new Date(op.date).getFullYear() + "-" + new Date(op.date).getMonth() + "-" + new Date(op.date).getDate()
+                          }</td>
 
-                          </tr>
-                        )
-                      })
-                    }
-                  </tbody>
-                </table>
+                        </tr>
+                      )
+                    })
+                  }
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
