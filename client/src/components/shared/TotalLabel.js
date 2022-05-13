@@ -11,7 +11,7 @@ const totalValue = (data, value) => {
    }
   }
 const TotalLabel = ({data,value,title}) => {
-    let valueBirim = value === "energy" && "kWh"|| "amount" &&"TL" || "duration" && "dakika"
+    let valueBirim = value == "energy" && "kWh"|| "amount" && "TL" || "duration" && "dakika"|| "lastbalance" && "TL"
     return (
         <label className='px-2 py-1 my-1 text-nowrap fs-6 rounded' style={{backgroundColor:"#BDE6F1"}}>
             {title} : <strong>{totalValue(data, value)} {valueBirim}</strong>
