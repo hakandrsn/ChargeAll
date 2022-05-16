@@ -16,7 +16,6 @@ const DeviceUpdate = (props) => {
     }, [])
 
     const onSubmit = async data => {
-        console.log(data)
         await ax.put(`/devices/${id}`, {
             deviceid: data.deviceid,
             location: data.location,

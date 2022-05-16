@@ -61,11 +61,11 @@ const Devices = (props) => {
                 </div>
                 <div>
                   <label style={{ width: 130 }}>Konum</label>
-                  <label>: {locArea && locArea.value}</label>
+                  <label>: {locArea ? locArea.value.slice(8) : "Aranıyor..."}</label>
                 </div>
                 <div>
                   <label style={{ width: 130 }}>Kullanan Kullanıcı</label>
-                  <label>: {device.charginguser}</label>
+                  <label>: {device.charginguser ? device.charginguser : "Kullanılmıyor."}</label>
                 </div>
                 <div>
                   <label style={{ width: 130 }}>Ücret</label>
