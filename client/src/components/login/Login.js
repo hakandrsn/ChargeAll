@@ -15,14 +15,13 @@ const Login = () => {
   const { register, handleSubmit } = useForm({
     resolver: yupResolver(schema)
   })
-  const onSubmit = data => {
-    // console.log(data)
-    login(data.username,data.password)
+  const onSubmit = e => {
+    login(e.username,e.password)
   }
   return (
     <div className="text-center d-flex justify-content-center align-items-center" style={{ height: "100vh" }} cz-shortcut-listen="true">
       <main className="form-signin">
-        <form style={{ width: 350 }} onSubmit={handleSubmit((data)=>onSubmit(data))}>
+        <form style={{ width: 350 }} onSubmit={handleSubmit((e)=>onSubmit(e))}>
           <img className="mb-5" src={ikon} alt="" width={350} />
           <h1 className="h3 mb-3 fw-normal">Giriş Yapın</h1>
 

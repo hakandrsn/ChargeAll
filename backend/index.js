@@ -20,7 +20,6 @@ mongoose.connect("mongodb+srv://receptanilcengiz:Rtc123456@cluster0.pxlal.mongod
 
 
 const isloggledin = true;
-app.listen(process.env.PORT || 3000);
 
 adminRouter=require("./Router/adminRouter.js");
 userRouter=require("./Router/userRouter.js");
@@ -41,3 +40,4 @@ app.use("/devices",deviceRouter);
 app.get("/", (req, res) => {
     res.send("Anasayfa")
 })
+app.listen(process.env.PORT || 3000);

@@ -17,6 +17,7 @@ import UserUpdate from '../users/UserUpdate'
 import AboutUs from '../aboutus/AboutUs'
 import Contact from '../contact/Contact'
 import DeviceLocation from '../devices/DeviceLocation'
+import DeviceUpdate from '../devices/DeviceUpdate'
 
 const HomeLayout = () => {
     return (
@@ -32,6 +33,8 @@ const HomeLayout = () => {
                     <Route exact path="/users/update/:id" component={UserUpdate} />
                     <Route exact path="/devices" component={Devices} />
                     <Route exact path="/device/:id" component={DevicesDetail} />
+                    <Route exact path="/device/update/:id" component={DeviceUpdate} />
+
                     <Route exact path="/reset/:id" component={ResetPassword} />
                     <Route exact path="/profil/:id" component={Profil} />
                     <Route exact path="/devicelocation/:id" component={DeviceLocation} />

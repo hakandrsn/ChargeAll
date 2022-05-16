@@ -1,11 +1,10 @@
-var express = require("express");
-var app = express();
-const req = require("express/lib/request");
-var User = require("../Model/User.js");
+const express = require("express");
+const app = express();
+const User = require("../Model/UserModel.js");
 const router = express.Router();
 app.use(express.json());
-router.get("/", (req, res) => {
-    User.find()
+router.get("/", async (req, res) => {
+    await User.find()
         .then((users) => {
             res.json(users);
         })
@@ -14,8 +13,8 @@ router.get("/", (req, res) => {
         });
 });
 
-router.get("/:id", (req, res) => {
-    User.findOne({ _id: req.params.id })
+router.get("/:id", async (req, res) => {
+    await User.findOne({ _id: req.params.id })
         .then((users) => {
             res.json(users);
         })
@@ -24,9 +23,9 @@ router.get("/:id", (req, res) => {
         });
 })
 
-router.get("/bysite/:site", (req, res) => {
+router.get("/bysite/:site", async (req, res) => {
     console.log(req.params.site)
-    User.find({ "site": req.params.site })
+    await User.find({ "site": req.params.site })
         .then((users) => {
             res.json(users);
         })
@@ -35,24 +34,20 @@ router.get("/bysite/:site", (req, res) => {
         });
 })
 
-router.post("/", (req, res) => {
-    const product = new User({
-        userid: req.body.userid,
-        cardid: req.body.cardid,
-        username: req.body.username,
-        password: req.body.password,
-        balance: req.balance,
-        devices: req.body.devices,
-        operations: req.operations,
-        site: req.body.site,
-    });
-    product.save();
-    res.json(product);
+
+router.post("/", async (req, res) => {
+    try {
+        const addUser = new User(req.body);
+        const result = await addUser.save();
+        return res.json(result);
+    } catch (e) {
+        return console.log(e)
+    }
 })
 
-router.post("/addoperation", (req, res) => {
+router.post("/addoperation", async (req, res) => {
     console.log(req.body);
-    User.findByIdAndUpdate(req.body.id, {
+    await User.findByIdAndUpdate(req.body.id, {
         $push: {
             "fills": {
                 "amount": req.body.amount,
@@ -70,8 +65,8 @@ router.post("/addoperation", (req, res) => {
         });
 })
 
-router.put("/:id", (req, res) => {
-    User.findByIdAndUpdate(req.params.id, {
+router.put("/:id", async (req, res) => {
+    await User.findByIdAndUpdate(req.params.id, {
         userid: req.body.userid,
         cardid: req.body.cardid,
         username: req.body.username,
@@ -87,8 +82,8 @@ router.put("/:id", (req, res) => {
         });
 })
 
-router.delete("/:id", (req, res) => {
-    User.findByIdAndDelete(req.params.id)
+router.delete("/:id", async (req, res) => {
+    await User.findByIdAndDelete(req.params.id)
         .then((users) => {
             res.json(users);
         })

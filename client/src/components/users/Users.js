@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import ax from '../../ax'
 import { Link } from "react-router-dom"
 import { picons } from './userIcons'
+import Loading from "../../utils/Loading"
 const Users = (props) => {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(false)
@@ -9,21 +10,21 @@ const Users = (props) => {
   const [search, setSearch] = useState("")
   const { path } = props.match
   const userSite = localStorage.getItem("site")
+  const getWithSite = async () => {
+    setLoading(true)
+    try {
+      const res = await ax.get(`${path}/bysite/${userSite}`)
+      setUsers(res.data)
+    } catch (e) {
+      alert("Sayfa yüklenirken hata oluştu")
+    } finally {
+      setLoading(false)
+    }
+  }
   useEffect(() => {
-    (async () => {
-      setLoading(true)
-      ax.get(`${path}`).then(res => {
-        setUsers(res.data)
-      }).catch(err => {
-        setError(err)
-        console.log(error)
-      }).finally(() => {
-        setLoading(false)
-      })
-    })()
+    getWithSite()
   }, [error, path])
   const filteredUsers = users
-    .filter((user) => user.site === userSite)
     .sort((a, b) => {
       if (new Date(a.date) < new Date(b.date)) return 1
       if (new Date(a.date) > new Date(b.date)) return -1
@@ -79,9 +80,7 @@ const Users = (props) => {
   }
   if (loading) return (
     <div className="d-flex justify-content-center">
-      <div className="spinner-border" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </div>
+      <Loading />
     </div>
   )
   return (

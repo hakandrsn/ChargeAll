@@ -8,7 +8,6 @@ import { FcElectricity } from 'react-icons/fc'
 import { GiElectricalResistance } from 'react-icons/gi'
 import { FiUserCheck } from 'react-icons/fi'
 import { MdPriceCheck, MdPriceChange } from 'react-icons/md'
-import GoogleMapReact from 'google-map-react';
 import screen from "../../screen"
 import GoogleMap from '../shared/GoogleMap';
 

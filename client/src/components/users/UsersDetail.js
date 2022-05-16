@@ -3,10 +3,11 @@ import Modal from "../../modal/Modal"
 import history from '../../history'
 import ax from '../../ax'
 import "./Users.css"
-import filterIcons from "../../assets/icons/filter.svg"
-import Pdf from '../../utils/pdf/pdf'
 import PdfButton from '../shared/PdfButton'
 import TotalLabel from '../shared/TotalLabel'
+import SortBtn from '../shared/SortBtn'
+import Loading from "../../utils/Loading"
+import date from "date-and-time"
 const UsersDetail = (props) => {
   const { id } = props.match.params
   const [user, setUser] = useState({})
@@ -15,7 +16,7 @@ const UsersDetail = (props) => {
   const [sorted, setSorted] = useState("amount")
   const [search, setSearch] = useState("")
   const replaceDate = (op) => {
-    return new Date(op.date).getFullYear() + "-" + new Date(op.date).getMonth() + "-" + new Date(op.date).getDate()
+    return (new Date(op.date).getFullYear() + "-" + new Date(op.date).getMonth() + "-" + new Date(op.date).getDate()).toLowerCase().toString()
   }
   const headersCharge = [
     {
@@ -98,7 +99,7 @@ const UsersDetail = (props) => {
     setLoading(true)
     const getingUser = async () => {
       await ax.get(`/users/${id}`).then(res => {
-        setUser(res.data)
+        setUser(res.data) 
       }).catch(err => {
         setError(err)
         console.log(error)
@@ -116,8 +117,8 @@ const UsersDetail = (props) => {
     return sortedData.filter((dat) => {
       return ((dat.deviceid && dat.deviceid.toString().toLowerCase().includes(search))) ||
         (dat.amount && dat.amount.toFixed(2).toString().toLowerCase().includes(search)) ||
-        (dat.energy && dat.energy.toString().toLowerCase().includes(search)) ||
-        (replaceDate(dat) && replaceDate(dat).toString().toLowerCase().includes(search)) ||
+        (dat.energy && dat.energy.toFixed(2).toString().toLowerCase().includes(search)) ||
+        (dat.date && dat.date.toString().toLowerCase().includes(search)) ||
         (dat.admin && dat.admin.toString().toLowerCase().includes(search))
     })
   }
@@ -132,7 +133,7 @@ const UsersDetail = (props) => {
     return sortedData.filter((dat) => {
       return ((dat.userid && dat.userid.toString().toLowerCase().includes(search))) ||
         (dat.amount && dat.amount.toFixed(2).toString().toLowerCase().includes(search)) ||
-        (dat.lastbalance && dat.lastbalance.toString().toLowerCase().includes(search)) ||
+        (dat.lastbalance && dat.lastbalance.toFixed(2).toString().toLowerCase().includes(search)) ||
         (dat.date && dat.date.toString().toLowerCase().includes(search)) ||
         (dat.duration && dat.duration.toFixed(2).toString().toLowerCase().includes(search))
     })
@@ -203,12 +204,11 @@ const UsersDetail = (props) => {
                   <thead className='table-dark'>
                     <tr>
                       <th>#</th>
-                      <th><button onClick={() => setSorted("deviceid")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Cihaz id</button><img width={25} alt="user" src={filterIcons} /></th>
-                      <th><button onClick={() => setSorted("energy")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Enerji</button><img width={25} alt="user" src={filterIcons} /></th>
-                      <th><button onClick={() => setSorted("amount")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Tutar</button><img width={25} alt="user" src={filterIcons} /></th>
-                      <th><button onClick={() => setSorted("duration")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Süre</button><img width={25} alt="user" src={filterIcons} /></th>
-                      <th><button onClick={() => setSorted("date")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Tarih</button><img width={25} alt="user" src={filterIcons} /></th>
-
+                      <th><SortBtn title="Cihaz id" state={()=>setSorted("deviceid")} /></th>
+                      <th><SortBtn title="Enerji" state={()=>setSorted("energy")} /></th>
+                      <th><SortBtn title="Tutar" state={()=>setSorted("amount")} /></th>
+                      <th><SortBtn title="Süre" state={()=>setSorted("duration")} /></th>
+                      <th><SortBtn title="Tarih" state={()=>setSorted("date")} /></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -218,12 +218,10 @@ const UsersDetail = (props) => {
                           <tr key={i}>
                             <td>{i + 1}</td>
                             <td>{op.deviceid}</td>
-                            <td>{op.energy}</td>
-                            <td>{op.amount}</td>
-                            <td>{op.duration}</td>
-                            <td>{(new Date(op.date).getFullYear() + "-" + new Date(op.date).getMonth() + "-" + new Date(op.date).getDate()).toLowerCase().toString()
-                            }</td>
-
+                            <td>{op.energy.toFixed(2)}</td>
+                            <td>{op.amount.toFixed(2)}</td>
+                            <td>{op.duration.toFixed(2)}</td>
+                            <td>{op.date}</td>
                           </tr>
                         )
                       })
@@ -243,19 +241,18 @@ const UsersDetail = (props) => {
                 <PdfButton header={headersFills} data={filteredFills(sorted, user.fills)} title="Bakiye Yüklemeleri" />
               </div>
               <div className='d-flex justify-content-evenly mb-2'>
-              <TotalLabel title="Toplam Ödeme" data={user.operations} value="amount" />
-              <TotalLabel title="Toplam Son Bakiye" data={user.operations} value="lastbalance" />
+              <TotalLabel title="Toplam Ödeme" data={user.fills} value="amount" />
+              <TotalLabel title="Toplam Son Bakiye" data={user.fills} value="lastbalance" />
               </div>
               <table className='table borderless'>
                 <thead className='table-dark'>
                   <tr>
                     <th>#</th>
-                    <th><button onClick={() => setSorted("userid")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Kullanıcı id</button><img width={25} alt="user" src={filterIcons} /></th>
-                    <th><button onClick={() => setSorted("amount")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Miktar</button><img width={25} alt="user" src={filterIcons} /></th>
-                    <th><button onClick={() => setSorted("lastbalance")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Son Bakiye</button><img width={25} alt="user" src={filterIcons} /></th>
-                    <th><button onClick={() => setSorted("admin")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Yetki</button><img width={25} alt="user" src={filterIcons} /></th>
-                    <th><button onClick={() => setSorted("date")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>Tarih</button><img width={25} alt="user" src={filterIcons} /></th>
-
+                    <th><SortBtn title="Kullanıcı id" state={()=>setSorted("userid")} /></th>
+                      <th><SortBtn title="Tutar" state={()=>setSorted("amount")} /></th>
+                      <th><SortBtn title="Son Yükleme" state={()=>setSorted("lastbalance")} /></th>
+                      <th><SortBtn title="Yetki" state={()=>setSorted("admin")} /></th>
+                      <th><SortBtn title="Tarih" state={()=>setSorted("date")} /></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -268,8 +265,7 @@ const UsersDetail = (props) => {
                           <td>{op.amount}</td>
                           <td>{op.lastbalance}</td>
                           <td>{op.admin}</td>
-                          <td>{new Date(op.date).getFullYear() + "-" + new Date(op.date).getMonth() + "-" + new Date(op.date).getDate()
-                          }</td>
+                          <td>{op.date}</td>
 
                         </tr>
                       )
@@ -292,9 +288,7 @@ const UsersDetail = (props) => {
   }
   if (loading && !user) return (
     <div className="d-flex justify-content-center">
-      <div className="spinner-border" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </div>
+    <Loading />
     </div>
   )
   return (

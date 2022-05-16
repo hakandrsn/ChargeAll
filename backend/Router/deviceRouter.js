@@ -1,11 +1,9 @@
 var express = require("express");
 var app = express();
-const req = require("express/lib/request");
-var Device=require("../Model/Device.js");
+var Device = require("../Model/Device.js");
 const router = express.Router();
 app.use(express.json());
 router.get("/", (req, res) => {
-    console.log(req.params)
     Device.find()
         .then((device) => {
             res.json(device);
@@ -17,7 +15,7 @@ router.get("/", (req, res) => {
 
 router.get("/list", (req, res) => {
     console.log(req.params)
-    Device.find({}, {'operations': false})
+    Device.find({}, { 'operations': false })
         .then((device) => {
             res.json(device);
         })
@@ -25,9 +23,8 @@ router.get("/list", (req, res) => {
             res.json(err);
         });
 });
-
 router.get("/:id", (req, res) => {
-    Device.findOne({_id:req.params.id})
+    Device.findOne({ _id: req.params.id })
         .then((device) => {
             res.json(device);
         })
@@ -38,7 +35,7 @@ router.get("/:id", (req, res) => {
 
 router.get("/bysite/:site", (req, res) => {
     console.log(req.params)
-    Device.find({"site":req.params.site})
+    Device.find({ "site": req.params.site })
         .then((device) => {
             res.json(device);
         })
@@ -53,8 +50,8 @@ router.post("/", (req, res) => {
         deviceid: req.body.deviceid,
         location: req.body.location,
         site: req.body.site,
-        type:req.body.type,
-        allowedsites:req.body.allowedsites,
+        type: req.body.type,
+        allowedsites: req.body.allowedsites,
         operations: req.operations,
     });
     product.save();
@@ -66,10 +63,11 @@ router.put("/:id", (req, res) => {
         deviceid: req.body.deviceid,
         location: req.body.location,
         site: req.body.site,
-        type:req.body.type,
-        allowedsites:req.body.allowedsites,
-        operations: req.operations,
-        mobilecharging:req.mobilecharging,
+        type: req.body.type,
+        allowedsites: req.body.allowedsites,
+        operations: req.body.operations,
+        mobilecharging: req.body.mobilecharging,
+        price: req.body.price
     })
         .then((product) => {
             res.json(product);

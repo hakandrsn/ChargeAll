@@ -1,39 +1,29 @@
 import React, { useEffect, useState } from 'react'
-import Modal from '../../modal/Modal'
 import history from '../../history'
 import ax from '../../ax'
-import { useForm } from 'react-hook-form'
 import UserForm from './UserForm'
 import date from "date-and-time"
 const NewUser = () => {
-    const [userData, setUserData] = useState([])
-    useEffect(() => {
-        const getUser = async () => {
-            const res = await ax.get('/devices')
-            setUserData(res.data)
-        }
-        getUser()
-    }, [])
+    const userSite = localStorage.getItem("site")
 
     const onSubmit = async (data) => {
-        await ax.post("/users", {
-            userid: data.userid,
-            cardid: data.cardid,
-            username: data.username,
-            password: data.password,
-            balance: data.balance,
-            devices: data.devices,
-            operations: data.operations,
-            site: data.site,
-            date: date.format(new Date(), 'YYYY/MM/DD HH:mm:ss')
-        }).catch((err) => alert(err))
-            .then((res) => console.log(res))
-            .finally(() => {
-                history.goBack()
-            })
-
+        try {
+            const postingData = {
+                userid: data.userid,
+                cardid: data.cardid,
+                username: data.username,
+                password: data.password,
+                balance: 0,
+                devices: data.devices,
+                operations: [],
+                site: userSite,
+                date: date.format(new Date(), 'YYYY-MM-DD HH:mm:ss'),
+            }
+            await ax.post("/users", postingData)
+        } catch (e) {
+            console.log(e)
+        }
     }
-
     return (
         <div className='container'>
             <button className='d-block border-0 px-4 py-1 rounded' style={{ backgroundColor: "#ff9911" }} onClick={() => history.goBack()}>Geri</button>
