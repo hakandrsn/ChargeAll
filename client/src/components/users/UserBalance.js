@@ -25,7 +25,7 @@ const UserBalance = (props) => {
   const updateBalance = async () => {
     if (balance > 0) {
      await ax.put(`/users/${userData._id}`, {
-        balance: Number(userData.balance) + Number(balance)
+      balance: parseFloat(userData.balance) + parseFloat(balance)
         
       }).finally(() => {})
      await ax.post(`/users/addoperation`, {"id":userData._id ,"operation":"fill","amount": Number(balance),

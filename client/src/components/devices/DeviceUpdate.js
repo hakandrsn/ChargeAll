@@ -25,7 +25,7 @@ const DeviceUpdate = (props) => {
             operations: data.operations,
             mobilecharging: data.mobilecharging,
             site: userSite,
-            price:data.price
+            price:parseFloat(data.price)
         }).catch(err => { alert(err) })
             .then((res) => console.log(res))
             .finally(() => {
