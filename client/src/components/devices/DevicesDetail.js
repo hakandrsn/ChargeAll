@@ -3,7 +3,6 @@ import Modal from "../../modal/Modal"
 import history from '../../history'
 import ax from '../../ax'
 import filterIcons from "../../assets/icons/filter.svg"
-import Pdf from '../../utils/pdf/pdf'
 import PdfButton from '../shared/PdfButton'
 import TotalLabel from '../shared/TotalLabel'
 const headersDevices = [
@@ -32,7 +31,7 @@ const headersDevices = [
     id: "amount",
     numeric: false,
     disablePadding: false,
-    label: "yetkili",
+    label: "Miktar",
     isFiltering: true,
   },
   {
@@ -147,8 +146,8 @@ const DevicesDetail = (props) => {
                       <th>
                         <button onClick={() => setSorted("energy")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>
                           Enerji
-                        </button><
-                          img width={25} src={filterIcons} alt="sort" />
+                        </button>
+                        <img width={25} src={filterIcons} alt="sort" />
                       </th>
                       <th>
                         <button onClick={() => setSorted("duration")} style={{ backgroundColor: "transparent", color: "white", border: "none", margin: 0, padding: 0 }}>
@@ -179,7 +178,7 @@ const DevicesDetail = (props) => {
                           <tr key={i}>
                             <td>{i + 1}</td>
                             <td>{op.userid}</td>
-                            <td>{op.energy}</td>
+                            <td>{Number(op.energy).toFixed(2)}</td>
                             <td>{op.duration.toFixed(2)}</td>
                             <td>{op.amount.toFixed(2)}</td>
                             <td>{replaceDate(op)}</td>

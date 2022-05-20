@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { createContext, useState, useContext, useEffect } from 'react'
 import ax from '../ax'
 import history from "../history"
@@ -7,7 +8,24 @@ export const Auth = createContext();
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
+    const userSite = localStorage.getItem("site")
+    const [deviceLoc, setDeviceLoc] = useState([])
 
+    let data = []
+    useEffect(() => {
+        const getLocation = async () => {
+            await ax.get(`/devices/bysite/${userSite}`).then(async res => {
+                for (let i = 0; i < res.data.length; i++) {
+                    const laglng = res.data[i].location.split(",")
+                    const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${laglng[0]},${laglng[1]}&key=AIzaSyBPeeSwsoJ6yA5A_PFz51wrQd4SVLcJdDU`)
+                    const result = response.data
+                    data.push({value:result.results[0].formatted_address,id:res.data[i]._id})
+                }
+                setDeviceLoc(data)
+            })
+        }
+        getLocation()
+    }, [])
     const login = (username, password) => {
         setLoading(true)
         ax.post('/login', { username, password }).then((user) => {
@@ -36,6 +54,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         logout,
+        deviceLoc
     }
     return (
         <Auth.Provider

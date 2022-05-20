@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import history from '../../history'
 import ax from '../../ax'
 import UserForm from './UserForm'
@@ -22,6 +22,8 @@ const NewUser = () => {
             await ax.post("/users", postingData)
         } catch (e) {
             console.log(e)
+        } finally {
+            history.goBack()
         }
     }
     return (

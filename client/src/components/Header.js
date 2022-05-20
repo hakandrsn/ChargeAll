@@ -29,8 +29,8 @@ const Header = () => {
           <li><Link to="/devices" className="nav-link px-2 link-light">Cihazlar</Link></li>
 
           <li className='header-contact'>
-            <a onClick={()=>setOpen(!open)} className="nav-link px-2 link-light">İletişim</a>
-           {open && <Contact />}
+            <a onClick={()=>setOpen(!open)} className="nav-link px-2 link-light ">İletişim</a>
+           {open && <Contact className="contact" />}
           </li>
           <li><Link to="/aboutus" className="nav-link px-2 link-light">Hakkımızda</Link></li>
         </ul>

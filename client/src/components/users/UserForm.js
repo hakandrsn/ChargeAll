@@ -38,7 +38,7 @@ const UserForm = (props) => {
             </div>
             <div className="col-12">
                 <label htmlFor="password" className="form-label">Şifre</label>
-                <input name="password" {...register("password")} type="password" className="form-control" id="password" placeholder="******" />
+                <input name="password" {...register("password")} type="text" className="form-control" id="password" placeholder="******" />
             </div>
             <div className="col-md-12">
                 <label htmlFor="userid" className="form-label">Kullanıcı id</label>

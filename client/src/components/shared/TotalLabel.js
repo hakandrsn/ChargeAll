@@ -3,12 +3,13 @@ import proTypes from "prop-types"
 
 const totalValue = (data, value) => {
     let total = 0
-    if (data) {
-        for (let i = 0; i < data.length; i++) {
-            total += Number(data[i][value])
+    data && value && data.forEach((d) => {
+        if (d[value] !== NaN && d[value] !== undefined) {
+            total += d[value]
         }
-        return isNaN(total) ? 0 : total.toFixed(1)
-    }
+    })
+    return isNaN(total) ? 0 : total.toFixed(2)
+
 }
 const TotalLabel = ({ data, value, title }) => {
     const valueBirim = () => {
