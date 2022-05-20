@@ -3,8 +3,8 @@ var app = express();
 var Device = require("../Model/Device.js");
 const router = express.Router();
 app.use(express.json());
-router.get("/", (req, res) => {
-    Device.find()
+router.get("/", async(req, res) => {
+  await  Device.find()
         .then((device) => {
             res.json(device);
         })
@@ -13,9 +13,9 @@ router.get("/", (req, res) => {
         });
 });
 
-router.get("/list", (req, res) => {
+router.get("/list",async (req, res) => {
     console.log(req.params)
-    Device.find({}, { 'operations': false })
+   await Device.find({}, { 'operations': false })
         .then((device) => {
             res.json(device);
         })
@@ -23,8 +23,18 @@ router.get("/list", (req, res) => {
             res.json(err);
         });
 });
-router.get("/:id", (req, res) => {
-    Device.findOne({ _id: req.params.id })
+router.get("/list/:id", async(req, res) => {
+   await Device.findOne({ _id: req.params.id }, { 'operations': false })
+        .then((device) => {
+            res.json(device);
+        })
+        .catch((err) => {
+            res.json(err);
+        });
+})
+router.get("/list/bysite/:site",async (req, res) => {
+    //console.log(req.params)
+  await  Device.find({ "site": req.params.site }, { 'operations': false })
         .then((device) => {
             res.json(device);
         })
@@ -33,9 +43,20 @@ router.get("/:id", (req, res) => {
         });
 })
 
-router.get("/bysite/:site", (req, res) => {
+router.get("/:id",async (req, res) => {
+  await  Device.findOne({ _id: req.params.id })
+        .then((device) => {
+            res.json(device);
+        })
+        .catch((err) => {
+            res.json(err);
+        });
+})
+
+
+router.get("/bysite/:site", async (req, res) => {
     console.log(req.params)
-    Device.find({ "site": req.params.site })
+    await Device.find({ "site": req.params.site })
         .then((device) => {
             res.json(device);
         })
@@ -45,7 +66,7 @@ router.get("/bysite/:site", (req, res) => {
 })
 
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
     const product = new Device({
         deviceid: req.body.deviceid,
         location: req.body.location,
@@ -54,8 +75,21 @@ router.post("/", (req, res) => {
         allowedsites: req.body.allowedsites,
         operations: req.operations,
     });
-    product.save();
+    await product.save();
     res.json(product);
+})
+
+router.post("/qrcharging", async (req, res) => {
+    console.log(req.body)
+    await Device.findByIdAndUpdate(req.body.id, {
+        mobilecharging: req.body.mobilecharging,
+    })
+        .then((product) => {
+            res.json(product);
+        })
+        .catch((err) => {
+            res.json(err);
+        });
 })
 
 router.put("/:id", (req, res) => {

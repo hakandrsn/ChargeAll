@@ -24,6 +24,7 @@ const isloggledin = true;
 adminRouter=require("./Router/adminRouter.js");
 userRouter=require("./Router/userRouter.js");
 deviceRouter=require("./Router/deviceRouter.js");
+chargerRouter=require("./Router/chargerRouter.js");
 
 app.use((req, res, next) => {
     if (!isloggledin) {
@@ -36,6 +37,7 @@ app.use((req, res, next) => {
 app.use("/login",adminRouter);
 app.use("/users",userRouter);
 app.use("/devices",deviceRouter);
+app.use("/charger",chargerRouter);
 
 app.get("/", (req, res) => {
     res.send("Anasayfa")

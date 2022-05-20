@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const User = require("../Model/UserModel.js");
+const User = require("../Model/User.js");
 const router = express.Router();
 app.use(express.json());
 router.get("/", async (req, res) => {
@@ -24,7 +24,6 @@ router.get("/:id", async (req, res) => {
 })
 
 router.get("/bysite/:site", async (req, res) => {
-    console.log(req.params.site)
     await User.find({ "site": req.params.site })
         .then((users) => {
             res.json(users);
@@ -64,7 +63,17 @@ router.post("/addoperation", async (req, res) => {
             res.json(err);
         });
 })
+router.post("/login", (req, res) => {
+    console.log(req.body.username)
 
+    User.find({"userid":req.body.userid, "password":req.body.password })
+    .then((admins) => {
+        res.json(admins);
+    })
+    .catch((err) => {
+        res.json(err);
+    });
+})
 router.put("/:id", async (req, res) => {
     await User.findByIdAndUpdate(req.params.id, {
         userid: req.body.userid,
@@ -81,6 +90,7 @@ router.put("/:id", async (req, res) => {
             res.json(err);
         });
 })
+
 
 router.delete("/:id", async (req, res) => {
     await User.findByIdAndDelete(req.params.id)

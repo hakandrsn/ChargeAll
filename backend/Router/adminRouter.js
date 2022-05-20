@@ -7,11 +7,8 @@ const router = express.Router();
 app.use(express.json());
 router.post("/", (req, res) => {
     console.log(req.body.username)
-    //console.log(req.body.password)
-
     Admin.find({"username":req.body.username, "password":req.body.password })
     .then((admins) => {
-        //console.log(admins)
         res.json(admins);
     })
     .catch((err) => {
